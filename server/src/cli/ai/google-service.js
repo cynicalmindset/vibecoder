@@ -1,5 +1,5 @@
 import {google} from "@ai-sdk/google"
-import {MessageConversionError, streamText} from "ai"
+import {convertToModelMessages, MessageConversionError, streamText} from "ai"
 import { config } from "../../config/google.config.js"
 import chalk from "chalk"
 
@@ -46,7 +46,8 @@ export class AIService{
                 usage:fullresult.usage
             }
         } catch (error) {
-            
+            console.error(chalk.red("AI error:"), error.message);
+  throw error;
         }
     }
 

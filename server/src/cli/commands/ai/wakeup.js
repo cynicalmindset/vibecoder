@@ -4,6 +4,7 @@ import yoctoSpinner from "yocto-spinner";
 import { getstoredtoken } from "../../../lib/token.js";
 import prisma from "../../../lib/db.js";
 import { select } from "@clack/prompts";
+import { startchat } from "../../chat/chatwithai.js";
 
 
 const wakeupacition = async() => {
@@ -70,7 +71,7 @@ const wakeupacition = async() => {
 
     switch(choice){
         case "chat":
-            console.log("chat is selected")
+            startchat("chat")
             break;
         case "tool":
             console.log("tool calling is sleceted")
