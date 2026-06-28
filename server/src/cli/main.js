@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import chalk from "chalk";
 import figlet from "figlet";
 import {Command} from "commander";
-import { login } from "./commands/auth/login.js";
+import { login, logout, whoami} from "./commands/auth/login.js";
 dotenv.config();
 
 async function main() {
@@ -23,6 +23,8 @@ async function main() {
     program.version("0.0.1")
     .description("Black slave inside CLI")
     .addCommand(login)
+    .addCommand(logout)
+    .addCommand(whoami)
 
     program.action(()=>{
         program.help()
