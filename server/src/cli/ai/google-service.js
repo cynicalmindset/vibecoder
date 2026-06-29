@@ -1,5 +1,5 @@
 import {google} from "@ai-sdk/google"
-import {convertToModelMessages, MessageConversionError, streamText} from "ai"
+import {convertToModelMessages, MessageConversionError, streamText, tool} from "ai"
 import { config } from "../../config/google.config.js"
 import chalk from "chalk"
 
@@ -30,6 +30,17 @@ export class AIService{
                 messages:messages,
 
             }
+
+            if(tools && Object.keys(tools).length>0){
+                streamConfig.tools = tools;
+                streamConfig.maxSteps = 5
+
+                console.log(
+                    chalk.gray(`[DEBUG] tools enabled: ${Object.keys(tools).join(", ")}`)
+                )
+            }
+
+
             const result = streamText(streamConfig);
             let fullresponse = ""
             for await (const chunk of result.textStream){
@@ -40,10 +51,35 @@ export class AIService{
             }
             const fullresult = result;
 
+            const toolsCalls = [];
+            const toolResults = [];
+
+            if(fullresult.steps && Array.isArray(fullresult.steps)){
+                for(const step of fullresult.steps){
+                    if(step.toolsCalls && step.toolsCalls.length>0){
+                        for(const toolCall of step.toolsCalls){
+                            toolsCalls.push(toolCall);
+
+                            if(ontollcall){
+                                ontollcall(toolCall)
+                            }
+                        }
+                    }
+                    if(step.toolResults && step.toolResults.length>0){
+                        toolResults.push(...step.toolResults)
+                    }
+                }
+            }
+
+
+
             return{
                 content:fullresponse,
                 finishResponse:fullresult.finishReason,
-                usage:fullresult.usage
+                usage:fullresult.usage,
+                toolsCalls,
+                toolResults,
+                steps:fullresult.steps
             }
         } catch (error) {
             console.error(chalk.red("AI error:"), error.message);
@@ -62,9 +98,9 @@ export class AIService{
 
     async getmessage(messages, tools=undefined){
         let fullres = "";
-        await this.sendmessage(messages,(chunk)=>{
+        const result = await this.sendmessage(messages,(chunk)=>{
             fullres += chunk
-        })
-        return fullres
+        },tools)
+        return result.content;
     }
 }
