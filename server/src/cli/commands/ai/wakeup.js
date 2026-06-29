@@ -6,6 +6,7 @@ import prisma from "../../../lib/db.js";
 import { select } from "@clack/prompts";
 import { startchat } from "../../chat/chatwithai.js";
 import { starttoolchat } from "../../chat/chatwithaitool.js";
+import { startagentchat } from "../../chat/chatwithaiagent.js";
 
 
 const wakeupacition = async() => {
@@ -78,7 +79,7 @@ const wakeupacition = async() => {
             await starttoolchat()
             break;
         case "agent":
-            console.log("agent is slected")
+            await startagentchat()
             break;
     }
 }

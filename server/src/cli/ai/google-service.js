@@ -1,5 +1,5 @@
 import {google} from "@ai-sdk/google"
-import {convertToModelMessages, MessageConversionError, streamText, tool} from "ai"
+import {convertToModelMessages, generateObject, MessageConversionError, streamText, tool} from "ai"
 import { config } from "../../config/google.config.js"
 import chalk from "chalk"
 
@@ -103,4 +103,34 @@ export class AIService{
         },tools)
         return result.content;
     }
+
+
+    /***
+ * generated structured o[ use inf zor schema]
+ * @param {Object} schema
+ * @param {string} prompt
+ * @returns {Promise<Object>}
+ * 
+ * */
+
+    async generaatestructure(schema, prompt){
+        try {
+            const result = await generateObject({
+                model:this.model,
+                schema:schema,
+                prompt:prompt
+            })
+
+            return result.object
+        } catch (error) {
+            console.log("ai structure generation error: ",error.message)
+            throw error;
+        }
+    }
+
+
+
 }
+
+
+
